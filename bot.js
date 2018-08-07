@@ -41,46 +41,64 @@ m.sendMessage(args)
 })
 }
 });
- client.on('message',async message => {
-  if(message.content.startsWith(prefix + "2bc")) {
-    let filter = m => m.author.id === message.author.id;
-    let thisMessage;
-    let thisFalse;
-    message.channel.send(':regional_indicator_b::regional_indicator_c:| **ارسل الرسالة الان**').then(msg => {
+client.on('message', message => {
+    var prefix = "L-";
+    
+        if (message.author.id === client.user.id) return;
+        if (message.guild) {
+       let embed = new Discord.RichEmbed()
+        let args = message.content.split(' ').slice(1).join(' ');
+    if(message.content.split(' ')[0] == prefix + 'bc') {
+        if (!args[1]) {
+    message.channel.send("**L-bc <message>**");
+    return;
+    }
+            message.guild.members.forEach(m => {
+       if(!message.member.hasPermission('ADMINISTRATOR')) return;
+                var bc = new Discord.RichEmbed()
+                .addField('» السيرفر :', `${message.guild.name}`)
+                .addField('» المرسل : ', `${message.author.username}#${message.author.discriminator}`)
+                .addField(' » الرسالة : ', args)
+                .setColor('#ff0000')
+                // m.send(`[${m}]`);
+                m.send(`${m}`,{embed: bc});
+            });
+        }
+        } else {
+            return;
+        }
+    });
+client.on("message", message => {
+    var prefix = "L-";
+        if (message.author.id === client.user.id) return;
+        if (message.guild) {
+       let embed = new Discord.RichEmbed()
+        let args = message.content.split(' ').slice(1).join(' ');
+    if(message.content.split(' ')[0] == prefix + '2bc') {
+        if (!args[1]) {
+    message.channel.send("**L-2bc <message>**");
+    return;
+    }
+            message.guild.members.forEach(m => {
+       if(!message.member.hasPermission('ADMINISTRATOR')) return;
+                m.send(args);
+            });
+            const AziRo = new Discord.RichEmbed()
+            .setAuthor(message.author.username, message.author.avatarURL)   
+            .setTitle('✅| جاري ارسال رسالتك ') 
+            .addBlankField(true)
+            .addField('♨| عدد الاعضاء المرسل لهم ', message.guild.memberCount , true)        
+            .addField('📝| الرسالة ', args)
+            .setColor('RANDOM')  
+            message.channel.sendEmbed(AziRo);          
+        }
+        } else {
+            return;
+        }
+    });
 
-    let awaitM = message.channel.awaitMessages(filter, {
-      max: 1,
-      time: 20000,
-      errors: ['time']
-    })
-    .then(collected => {
-      collected.first().delete();
-      thisMessage = collected.first().content;
-      msg.edit(':regional_indicator_b::regional_indicator_c:| **هل انت متأكد؟**');
-      let awaitY = message.channel.awaitMessages(response => response.content === 'نعم' || 'لا' && filter,{
-        max: 1,
-        time: 20000,
-        errors: ['time']
-      })
-      .then(collected => {
-        if(collected.first().content === 'لا') {
-          msg.delete();
-          message.delete();
-          thisFalse = false;
-        }
-        if(collected.first().content === 'نعم') {
-          if(thisFalse === false) return;
-        message.guild.members.forEach(member => {
-          msg.edit(':regional_indicator_b::regional_indicator_c:| **جاري الارسال**');
-          collected.first().delete();
-          member.send(`${thisMessage}\n\n${member} ,\nتم الارسال من : ${message.guild.name}\n تم الارسال بواسطة : ${message.author.tag}`);
-        });
-        }
-      });
-    });
-    });
-  }
-});
+
+    
 client.on('message', message => {
     if(message.content == 'L-bot-all-server') {
              if(!message.author.id === '285805483510726657') return;
@@ -113,60 +131,6 @@ client.on('message', message => {
     });
 
 
-client.on('message', message => {
-        if(!message.channel.guild) return;
-     if(message.content.startsWith(prefix + 'bc')) {
-     if(!message.channel.guild) return message.channel.send('**هذا الأمر فقط للسيرفرات**').then(m => m.delete(5000));
-     if(!message.member.hasPermission('ADMINISTRATOR')) return      message.channel.send('**للأسف لا تمتلك صلاحية** `ADMINISTRATOR`' );
-     let args = message.content.split(" ").join(" ").slice(2 + prefix.length);
-     let BcList = new Discord.RichEmbed()
-     .setThumbnail(message.author.avatarURL)
-     .setAuthor(`محتوى الرساله ${args}`)
-     .setDescription(`
-     عند إرآدة حضرتك إرسآل هذه الرسآلة بأمبيد أضغط على 📝
-     عند إرآدة حضرتك إرسآل هذه الرسآلة بدون أمبيد أضغط على ✏
-     عند إرآدتك منشن العضو أكتب 
-     <user>
-     لإرسال اسم السيرفر
-     <server>
-     لمنشنه أسم المرسل
-     <by>
-     `)
-     if (!args) return message.reply('**يجب عليك كتابة كلمة او جملة لإرسال البرودكاست**');message.channel.send(BcList).then(msg => {
-     msg.react('📝')
-     .then(() => msg.react('✏'))
-     .then(() =>msg.react('📝'))
-      
-     let EmbedBcFilter = (reaction, user) => reaction.emoji.name === '📝' && user.id === message.author.id;
-     let NormalBcFilter = (reaction, user) => reaction.emoji.name === '✏' && user.id === message.author.id;
-      
-     let EmbedBc = msg.createReactionCollector(EmbedBcFilter, { time: 60000 });
-     let NormalBc = msg.createReactionCollector(NormalBcFilter, { time: 60000 });
-     EmbedBc.on("collect", r => {
-      
-     message.channel.send(`:ballot_box_with_check: تم ارسال الرساله بنجاح`).then(m => m.delete(5000));
-     message.guild.members.forEach(m => {
-     let EmbedRep = args.replace('<server>' ,message.guild.name).replace('<user>', m).replace('<by>', `${message.author.username}#${message.author.discriminator}`)
-     var bc = new
-     Discord.RichEmbed()
-     .setColor('RANDOM')
-     .setDescription(EmbedRep)
-     .setThumbnail(message.author.avatarURL)
-     m.send({ embed: bc })
-     msg.delete();
-     })
-     })
-     NormalBc.on("collect", r => {
-       message.channel.send(`:ballot_box_with_check: تم ارسال الرساله بنجاح`).then(m => m.delete(5000));
-     message.guild.members.forEach(m => {
-     let NormalRep = args.replace('<server>' ,message.guild.name).replace('<user>', m).replace('<by>', `${message.author.username}#${message.author.discriminator}`)
-     m.send(NormalRep);
-     msg.delete();
-     })
-     })
-     })
-     }
-     });
  
 client.on('message', message => {
     if(message.content === "$bot") {
@@ -243,9 +207,9 @@ client.on("message", message => {
 ** Bot ${client.user.username} Commands **
 **
 ● ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ ●
--   [L-bc ]  [ لارسال رسالة لجميع اعضاء السيرفر  ]
+-   [L-bc ]  [ لارسال برودكاست مع ذكر إسم المرسل و إسم السيرفر ]
 
--   [L-2bc ]  [ لارسال رسالة لجميع اعضاء السيرفر بطريقه أخرى ]
+-   [L-2bc ]  [ لارسال برودكاست بدون ذكر إسم المرسل ولا إسم السيرفر ]
 
 -   [L-obc ]  [لارسال رساله للأونلاين فقط ]
 ● ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ ●
